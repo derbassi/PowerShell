@@ -1,4 +1,4 @@
-# PS_ExtraxtDataFromOutlook
+# My Outlook Mail Box >> myMailbox.ps
  PowerShell: Extracting Data from Outlook Mailbox
  
 HO TO EXECUTE THE SCRIPT
