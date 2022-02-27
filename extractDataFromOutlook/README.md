@@ -1,6 +1,10 @@
-# My Outlook Mail Box >> myMailbox.ps
- PowerShell: Extracting Data from Outlook Mailbox
- 
+########################################
+# My Outlook Mail Box >> myMailbox.ps  #
+#                                      #
+# Extracting Data from Outlook Mailbox #
+#                                      #
+########################################
+
 HO TO EXECUTE THE SCRIPT
 ************************
 OPTION 1
