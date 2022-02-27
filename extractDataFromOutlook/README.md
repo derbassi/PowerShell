@@ -1,9 +1,7 @@
-########################################
 # My Outlook Mail Box >> myMailbox.ps  #
 #                                      #
 # Extracting Data from Outlook Mailbox #
-#                                      #
-########################################
+
 
 HO TO EXECUTE THE SCRIPT
 ************************
