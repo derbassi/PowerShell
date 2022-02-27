@@ -1,10 +1,5 @@
-- 👋 Hi, I’m @derbassi
-- 👀 I’m interested in ...
-- 🌱 I’m currently learning ...
-- 💞️ I’m looking to collaborate on ...
-- 📫 How to reach me ...
-
-<!---
-derbassi/derbassi is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
+- 👋 Hi, I’m Baddi (Badrane Derbassi)
+- 👀 I’m interested in PowerShell, VMware, Windows Server, Database, Data, ETL, Power BI and Cloud > Azure 
+- 🌱 I’m currently learning git
+- 💞️ I’m looking to collaborate on powershell, database, data, power bi
+- 📫 How to reach me badrane@derbazi.net

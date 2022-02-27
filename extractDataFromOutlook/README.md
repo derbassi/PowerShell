@@ -1,6 +1,8 @@
-# PS_ExtraxtDataFromOutlook
- PowerShell: Extracting Data from Outlook Mailbox
- 
+# My Outlook Mail Box >> myMailbox.ps  #
+#                                      #
+# Extracting Data from Outlook Mailbox #
+
+
 HO TO EXECUTE THE SCRIPT
 ************************
 OPTION 1
@@ -30,10 +32,10 @@ OPTION 3
 1- Copy the mmb.bat in any place, do not forget to edit the folder "C:\users\YOUR USER\desktop\mmb\MyMailbox.ps1" to suit you
    In my case mmb is on my Desktop
 
-2- Double Click on mmb.bat = Execution of MyMailBox.ps1 unde PowerShell Console
+2- Double Click on mmb.bat = Execution of MyMailBox.ps1 under PowerShell Console
 
 
 
-******************
-First published at https://www.linkedin.com/pulse/powershell-extracting-data-from-outlook-mailbox-badrane-derbazi/
-******************
+***************************************************************
+First published at https://bit.ly/3yCNMCX On September 23, 2016
+***************************************************************
