@@ -1,0 +1,1 @@
+powershell.exe -command "C:\users\bd\desktop\mmb\MyMailbox.ps1" noLogo -ExecutionPolicy unrestricted
