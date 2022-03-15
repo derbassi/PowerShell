@@ -71,5 +71,4 @@ $myForm.FindName("Close").add_click({
     $myForm.Close()
 })
 
->>>>>>> 20ffb7ea676d35e1a9e97efd0a21efc72fc9c538
 $myForm.ShowDialog()
