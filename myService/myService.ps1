@@ -3,8 +3,8 @@
 Get-MyService is an extend mode for Get-Service
 
 . DESCRIPTION
-The Get-MyService will help you to get not only the state of the service but
-also the Process ID and the start mode
+The MyService will help you to get not only the state of the service but
+also the Process ID, the start mode and Required / dependencies services.
 
 
 .EXAMPLE
@@ -49,146 +49,237 @@ ProcesSId   : 8256
 StartMode   : Auto
 Started     : True
 State       : Running
+
+REMARKS
+    To see the examples, type: "get-help myService -examples".
+    For more information, type: "get-help myService -detailed".
+    
+.NOTES
+Author: Badrane DERBAZI
+Version: 1.0
+Purpose: Extend the Capabilities of the Get-Service Cmdlet
 #>
-function Get-MyService{
-    [cmdletBinding(DefaultParameterSetName='ByServiceName')]
+
+#region functions
+
+# Searching service(s) with a partial name and list Process ID, State, Start Mode 
+Function Get-MyService{
+  [cmdletBinding(DefaultParameterSetName='ByServiceName')]
+ 
+  param(
+  [Parameter(ParameterSetName='ByServiceName',Position=0)]
+  [string]$ServiceName,
     
-    param(
-     [Parameter(Mandatory, ParameterSetName='ByServiceName')]
-     [string]$ServiceName,
-   
-     [parameter(Mandatory, ParameterSetName='ByDisplayName')]
-     [string]$DisplayName,
-   
-     [Parameter(Mandatory)]
-     [Validateset('Running','Stopped','AllStatus')]
-     [string]$Status 
-    )
+  [parameter(ParameterSetName='ByDisplayName', Position=1)]
+  [string]$DisplayName,
     
-     if($ServiceName){
-        $theName = $ServiceName
-        $searchBy = "Name"
-     }elseif($DisplayName){
-        $theName = $DisplayName
-        $searchBy = "DisplayName"
-     }
-   
-     $s = Get-WmiObject -Class Win32_Service -Filter "$SearchBy like '%$theName%'" | Select-Object Name, DisplayName, ProcesSId, StartMode, Started, State
+  [Parameter(Mandatory, Position=2)]
+  [Validateset('Running','Stopped','AllStatus')]
+  [string]$Status 
+  )
      
-     if($status -in ("Running","Stopped")){
-       $r = $s |  Where-Object {$_.State -eq $Status} 
-       
-       if(-not $s.Name -or -not $s.DisplayName){
-         return Write-Host "Wrong Service's or Display Name. Please repeat..." -ForegroundColor Yellow -BackgroundColor Red
-       }else{
-          return $r
-       }
+   if($ServiceName){
+     $theName = $ServiceName
+     $searchBy = "Name"
+   }elseif($DisplayName){
+     $theName = $DisplayName
+     $searchBy = "DisplayName"
+   }else{
+     $theName = ""
+     $searchBy = "Name"
+ 
+   }
+    
+  $s = Get-WmiObject -Class Win32_Service -Filter "$SearchBy like '%$theName%'" | Select-Object Name, DisplayName, ProcesdID, StartMode, Started, State
+  $r = $s |  Where-Object {$_.State -eq $Status}     
+ 
+   if($status -in ("Running","Stopped")){
    
-     }elseif($status -like "AllStatus"){
-        return $s 
-     }
-   } 
-   
-   function Get-StartModeMyService{
-   [CmdletBinding()]
-     param(
-      [Parameter(Mandatory)]
-      #[Validateset('Auto','Manual','Disabled')]
-      [string]$StartMode
-     )
+     if($r -eq $Null){#return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
+      Add-Type -AssemblyName PresentationFramework
+      Add-Type -AssemblyName WindowsBase
+      return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
      
-     $r= Get-WmiObject -Class Win32_Service | Select-Object ProcesSId, Name, DisplayName, Started, State, StartMode | Sort-Object Name
-   
-     switch($startMode){
-        default{
-        Write-Host "Start Mode Should be : Auto, Disabled or Manual" -ForegroundColor Yellow -BackgroundColor Red
-        break;
-        }
-       'Manual'{
-        $r | Where-Object {$_.StartMode -eq "Manual"} 
-        break; 
-        }
-       'Auto'{
-        $r | Where-Object{$_.StartMode -eq "Auto"}
-        break; 
-        }
-       'Disabled'{
-        $r | Where-Object {$_.StartMode -eq "Disabled"} 
-        break; 
-        }
-   }
-   }
-   
-   function GetMyServiceToHTML{
-   
-   }
-   
-   function Get-MyServiceExcel{
-   
-   }
-   
-   function Get-AllMyRunningService{
-       $s = Get-WmiObject -Class Win32_Service -Filter "State = 'Running'" | Sort-Object State, Name
-       $r = ($s |  Select-Object ProcesSId, Name, DisplayName, Started, State) 
-   return $r
-   }
-   
-   function Get-AllMyStoppedService{
-     $s = Get-WmiObject -Class Win32_Service -Filter "State = 'Stopped'"| Sort-Object State, Name
-     $r = ($s |  Select-Object Name, DisplayName, Started, State )
-   return $r
-   }
-   
-   function Get-MyServiceProcessID{
-     $s = Get-WmiObject -Class Win32_Service | Sort-Object State, Name
-     $r = ($s |  Select-Object ProcesSId, Started, StartMode, State, Name, DisplayName) | Sort-Object Name 
-   return $r
-   }
-   
-   function Stop-MyService{
-     [CmdletBinding()]
-     param(
-      [Parameter(Mandatory)]
-      [string]$ServiceName
-     )
-    
-     $s= Get-WmiObject -Class Win32_Service -Filter "Name = '$ServiceName'"
-     if($s.State -eq "Stopped"){
-       Write-Host "The Service $ServiceName already stopped, no need to stop it" -ForegroundColor White -BackgroundColor Green 
-       Break
-     }
-     else{
-       $s | Stop-Service 
-       Write-Host "The Service $ServiceName stopped" -ForegroundColor Yellow -BackgroundColor Red
-       Break
-     }
+     }  
+     
+     if(-not $s.Name -or -not $s.DisplayName){
+      return Write-Host "Wrong Service's or Display Name. Please repeat..." -ForegroundColor Yellow -BackgroundColor Red
+     
+     }else{
      return $r
-   }
-   
-   function Start-MyService{
-     [CmdletBinding()]
-     param(
-      [Parameter(Mandatory)]
-      [string]$ServiceName
-     )
+     }
     
-     $s= Get-WmiObject -Class Win32_Service -Filter "Name = '$ServiceName'"
-     if($s.State -eq "Running"){
-       Write-Host "The Service $ServiceName already started, no need to start it" -ForegroundColor Yellow -BackgroundColor Red
-       Break
-     }
-     else{
-       $s | Start-Service 
-       Write-Host "The Service $ServiceName started" -ForegroundColor White -BackgroundColor Green
-       Break
-     }
-     return $r
+   }elseif($status -like "AllStatus"){
+   return $s 
    }
-   
-   
-   
-   #$c=Get-Command Get-MyService
-   #$c.DefaultParameterSet
-   #$c.ParameterSets  | Select Name
-   
-   #Get-AllMyStoppedService | ft -AutoSize -Wrap
+ } 
+ 
+ # List of Services according to their mode of startup 
+ Function Get-StartModeMyService{
+  [CmdletBinding()]
+      
+  param(
+  [Parameter(Mandatory)]
+  #[Validateset('Auto','Manual','Disabled')]
+  [string]$StartMode
+  )
+      
+  $r= Get-WmiObject -Class Win32_Service | Select-Object ProcessID, Name, DisplayName, Started, State, StartMode
+    
+   switch($StartMode){
+     default{
+     Write-Host "Start Mode Should be : Auto, Disabled or Manual" -ForegroundColor Yellow -BackgroundColor Red
+     break;
+     }
+ 
+     'Manual'{
+      $r | Where-Object {$_.StartMode -eq "Manual"} 
+     break; 
+     }
+ 
+     'Auto'{
+     $r | Where-Object{$_.StartMode -eq "Auto"}
+     break; 
+     }
+ 
+     'Disabled'{
+     $r | Where-Object {$_.StartMode -eq "Disabled"} 
+     break; 
+     }
+   }
+ }
+ 
+ 
+ # Changing StartMode from one state to another state
+ Function Change-MyServiceStartMode{
+ [CmdletBinding()]
+      
+  param(
+  [Parameter(Mandatory, Position=0)]
+   [string]$ServiceName,
+ 
+  [Parameter(Mandatory, Position=1)]
+  [Validateset('Auto','Manual','Disabled')]
+  [string]$StartModeNew
+  )
+ 
+  $s = get-wmiobject -class win32_service | where-object {$_.name -eq "$ServiceName"} 
+  $r = $r.changestartmode("StartModeNew") 
+       if($r.returnvalue -eq 0) {Write-Host  "success" -ForegroundColor Green -BackgroundColor White
+       } 
+       else{"$($r.returnvalue) was reported" 
+       } 
+  }
+ 
+ # Get-MyService results exported to HTML Format
+ Function Export-StartModeToHTML{
+ $myFile ="c:\temp\myService.html"
+ $myStyle ="<div align='center'>"
+ $myStyle = $myStyle + "<style>BODY{background-color:#eaeaea;}"
+ $myStyle = $myStyle + "TABLE{align:center; border: 1px solid black; border-collapse: collapse;}"
+ $myStyle = $myStyle + "TH{border: 1px solid black; background: #dddddd; padding: 5px;}"
+ $mystyle = $myStyle + "TD{border: 1px solid black; padding: 5px;}"
+ $mystyle = $myStyle + "</style>"
+ $Output = Get-MyService
+ $Output | ConvertTo-Html -head $myStyle -body "<H2>Services Status List</H2>"| Out-File $myDestination$myFile
+ Invoke-Expression $myDestination$myFile  
+ }
+    
+ Function Export-StartModeToExcel
+ {
+ # New feature 3  
+ }
+ 
+ # List all the running services with Process ID and State
+ Function Get-AllMyRunningService{
+  $s = Get-WmiObject -Class Win32_Service -Filter "State = 'Running'" 
+  $r = ($s |  Select-Object ProcessID, Name, DisplayName, Started, State) 
+ return $r
+ }
+ 
+ # Display the list of started services
+ Function Get-AllMyStoppedService{
+  $s = Get-WmiObject -Class Win32_Service -Filter "State = 'Stopped'"
+  $r = ($s |  Select-Object Name, DisplayName, Started, State )
+ return $r
+ }
+ 
+ # Display the list of started services
+ Function Get-MyServiceProcessID{
+  $s = Get-WmiObject -Class Win32_Service | Where-Object {$_.ProcessID -ne 0}
+  $r = ($s |Select-Object ProcessID, Started, StartMode, State, Name, DisplayName | Sort-Object State, Name)
+  
+ return $r
+ }
+ 
+ # Stop/Check a service
+ Function Stop-MyService{
+  [CmdletBinding()]
+ 
+  param(
+  [Parameter(Mandatory)]
+  [string]$ServiceName
+  )
+     
+  $s= Get-WmiObject -Class Win32_Service -Filter "Name = '$ServiceName'"
+  
+   if($s.State -eq "Stopped"){
+     Write-Host "The Service $ServiceName already stopped, no need to stop it" -ForegroundColor White -BackgroundColor Green 
+     Break
+   }
+   else{
+     $s | Stop-Service 
+     Write-Host "The Service $ServiceName stopped" -ForegroundColor Yellow -BackgroundColor Red
+   Break
+   }
+ 
+ return $r
+ }
+  
+ # Start/Check a service
+ Function Start-MyService{
+  [CmdletBinding()]
+ 
+  param(
+  [Parameter(Mandatory)]
+  [string]$ServiceName
+  )
+     
+  $s= Get-WmiObject -Class Win32_Service -Filter "Name = '$ServiceName'"
+ 
+   if($s.State -eq "Running"){
+     Write-Host "The Service $ServiceName already started, no need to start it" -ForegroundColor Yellow -BackgroundColor Red
+   Break
+   }
+   else{
+     $s | Start-Service 
+     Write-Host "The Service $ServiceName started" -ForegroundColor White -BackgroundColor Green
+   Break
+   }
+ return $r
+ }
+ 
+ # List of the service or services in which a particular service is required to it/them to run
+ Function Get-MyRequiredService{
+  [CmdletBinding()]
+  
+  param(
+  [Parameter(Mandatory)]
+  [string]$ServiceName
+  )
+ 
+  Get-Service $ServiceName -RequiredServices
+ }
+ 
+ # get the Service or Services in which a particular service depends to it/them to run
+ Function Get-myDependentService{
+  [CmdletBinding()]
+  
+  param(
+  [Parameter(Mandatory)]
+  [string]$ServiceName
+   )
+  
+  Get-Service $ServiceName -DependentServices
+ }
+ #endregion

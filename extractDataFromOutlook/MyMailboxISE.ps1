@@ -19,7 +19,7 @@
 ###############################################################################################
 
 # Folder and File
-$FolderPath = "C:\Users\BD\Desktop\mmb"
+$FolderPath = "C:\Users\Administrator\OneDrive\Documents\powershell\extractDataFromOutlook"
 $File = "MyEmailBox.csv"
 $TheFile = Join-Path $FolderPath $File
 
