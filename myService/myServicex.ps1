@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-﻿Add-Type -AssemblyName presentationframework
+Add-Type -AssemblyName presentationframework
 [xml]$xaml=@'
 <?xml version="1.0" encoding ="utf-16"?>
 <Window 
