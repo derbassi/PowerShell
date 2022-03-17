@@ -67,13 +67,13 @@ Function Get-MyService{
   [cmdletBinding(DefaultParameterSetName='ByServiceName')]
  
   param(
-  [Parameter(ParameterSetName='ByServiceName',Position=0)]
+  [Parameter(ParameterSetName='ByServiceName')]
   [string]$ServiceName,
     
-  [parameter(ParameterSetName='ByDisplayName', Position=1)]
+  [parameter(ParameterSetName='ByDisplayName')]
   [string]$DisplayName,
     
-  [Parameter(Mandatory, Position=2)]
+  [Parameter(Mandatory)]
   [Validateset('Running','Stopped','AllStatus')]
   [string]$Status 
   )
@@ -90,15 +90,15 @@ Function Get-MyService{
  
    }
     
-  $s = Get-WmiObject -Class Win32_Service -Filter "$SearchBy like '%$theName%'" | Select-Object Name, DisplayName, ProcesdID, StartMode, Started, State
+  $s = Get-WmiObject -Class Win32_Service -Filter "$SearchBy like '%$theName%'" | Select-Object Name, DisplayName, ProcessID, StartMode, Started, State
   $r = $s |  Where-Object {$_.State -eq $Status}     
  
    if($status -in ("Running","Stopped")){
    
-     if($r -eq $Null){#return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
-      Add-Type -AssemblyName PresentationFramework
-      Add-Type -AssemblyName WindowsBase
-      return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
+     if($r -eq $Null){return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
+      #Add-Type -AssemblyName PresentationFramework
+      #Add-Type -AssemblyName WindowsBase
+      #return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
      
      }  
      
