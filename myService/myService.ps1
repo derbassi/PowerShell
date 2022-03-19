@@ -67,13 +67,13 @@ Function Get-MyService{
   [cmdletBinding(DefaultParameterSetName='ByServiceName')]
  
   param(
-  [Parameter(ParameterSetName='ByServiceName',Position=0)]
+  [Parameter(ParameterSetName='ByServiceName')]
   [string]$ServiceName,
     
-  [parameter(ParameterSetName='ByDisplayName', Position=1)]
+  [parameter(ParameterSetName='ByDisplayName')]
   [string]$DisplayName,
     
-  [Parameter(Mandatory, Position=2)]
+  [Parameter(Mandatory)]
   [Validateset('Running','Stopped','AllStatus')]
   [string]$Status 
   )
@@ -95,7 +95,7 @@ Function Get-MyService{
  
    if($status -in ("Running","Stopped")){
    
-     if($r -eq $Null){#return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
+     if($r){#return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
       Add-Type -AssemblyName PresentationFramework
       Add-Type -AssemblyName WindowsBase
       return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
@@ -151,20 +151,20 @@ Function Get-MyService{
  
  
  # Changing StartMode from one state to another state
- Function Change-MyServiceStartMode{
+ Function Switch-StartModeMyService{
  [CmdletBinding()]
       
   param(
-  [Parameter(Mandatory, Position=0)]
+  [Parameter(Mandatory)]
    [string]$ServiceName,
  
-  [Parameter(Mandatory, Position=1)]
+  [Parameter(Mandatory)]
   [Validateset('Auto','Manual','Disabled')]
   [string]$StartModeNew
   )
  
   $s = get-wmiobject -class win32_service | where-object {$_.name -eq "$ServiceName"} 
-  $r = $r.changestartmode("StartModeNew") 
+  $r = $s.changestartmode("StartModeNew") 
        if($r.returnvalue -eq 0) {Write-Host  "success" -ForegroundColor Green -BackgroundColor White
        } 
        else{"$($r.returnvalue) was reported" 
