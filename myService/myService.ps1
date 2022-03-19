@@ -2,10 +2,9 @@
 .Synopsis
 Get-MyService is an extend mode for Get-Service
 
-. DESCRIPTION
+.DESCRIPTION
 The MyService will help you to get not only the state of the service but
 also the Process ID, the start mode and Required / dependencies services.
-
 
 .EXAMPLE
 Get-MyService -ServiceName net -status Running | Format-Table -Autosize
@@ -25,6 +24,7 @@ Name          DisplayName                       ProcesSId StartMode Started Stat
 ----          -----------                       --------- --------- ------- -----  
 XboxGipSvc    Xbox Accessory Management Service         0 Manual      False Stopped
 XboxNetApiSvc Xbox Live Networking Service              0 Manual      False Stopped
+
 .EXAMPLE
 Get-TheService -DisplayName "Network L" -status "AllStatus" | Format-Table -Autosize
 
