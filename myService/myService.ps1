@@ -26,7 +26,7 @@ Name          DisplayName                       ProcesSId StartMode Started Stat
 XboxGipSvc    Xbox Accessory Management Service         0 Manual      False Stopped
 XboxNetApiSvc Xbox Live Networking Service              0 Manual      False Stopped
 .EXAMPLE
-Get-MyService -DisplayName "Network L" -status "AllStatus" | Format-Table -Autosize
+Get-TheService -DisplayName "Network L" -status "AllStatus" | Format-Table -Autosize
 
 Name     DisplayName                ProcesSId StartMode Started State  
 ----     -----------                --------- --------- ------- -----  
@@ -34,7 +34,7 @@ netprofm Network List Service            2972 Manual       True Running
 NlaSvc   Network Location Awareness      2584 Auto         True Running
 
 .EXAMPLE
-Get-MyService -ServiceName L -Status AllStatus | ? {$_.startMode -eq 'Disabled'} | Format-Table -AutoSize
+Get-MyService -ServiceName L -Status AllStatus | ? {$_.startMode -eq 'Disabled'} | Format-Table -AutoSiz
 
 Name       DisplayName            ProcesSId StartMode Started State  
 ----       -----------            --------- --------- ------- -----  
@@ -49,31 +49,20 @@ ProcesSId   : 8256
 StartMode   : Auto
 Started     : True
 State       : Running
-
-REMARKS
-    To see the examples, type: "get-help myService -examples".
-    For more information, type: "get-help myService -detailed".
-    
-.NOTES
-Author: Badrane DERBAZI
-Version: 1.0
-Purpose: Extend the Capabilities of the Get-Service Cmdlet
 #>
-
-#region functions
 
 # Searching service(s) with a partial name and list Process ID, State, Start Mode 
 Function Get-MyService{
   [cmdletBinding(DefaultParameterSetName='ByServiceName')]
  
   param(
-  [Parameter(ParameterSetName='ByServiceName')]
+  [Parameter(ParameterSetName='ByServiceName',Position=0)]
   [string]$ServiceName,
     
-  [parameter(ParameterSetName='ByDisplayName')]
+  [parameter(ParameterSetName='ByDisplayName', Position=1)]
   [string]$DisplayName,
     
-  [Parameter(Mandatory)]
+  [Parameter(Mandatory, Position=2)]
   [Validateset('Running','Stopped','AllStatus')]
   [string]$Status 
   )
@@ -95,7 +84,7 @@ Function Get-MyService{
  
    if($status -in ("Running","Stopped")){
    
-     if($r){#return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
+     if($r -eq $Null){#return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
       Add-Type -AssemblyName PresentationFramework
       Add-Type -AssemblyName WindowsBase
       return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
@@ -151,20 +140,20 @@ Function Get-MyService{
  
  
  # Changing StartMode from one state to another state
- Function Switch-StartModeMyService{
+ Function Change-MyServiceStartMode{
  [CmdletBinding()]
       
   param(
-  [Parameter(Mandatory)]
+  [Parameter(Mandatory, Position=0)]
    [string]$ServiceName,
  
-  [Parameter(Mandatory)]
+  [Parameter(Mandatory, Position=1)]
   [Validateset('Auto','Manual','Disabled')]
   [string]$StartModeNew
   )
  
   $s = get-wmiobject -class win32_service | where-object {$_.name -eq "$ServiceName"} 
-  $r = $s.changestartmode("StartModeNew") 
+  $r = $r.changestartmode("StartModeNew") 
        if($r.returnvalue -eq 0) {Write-Host  "success" -ForegroundColor Green -BackgroundColor White
        } 
        else{"$($r.returnvalue) was reported" 
@@ -282,4 +271,3 @@ Function Get-MyService{
   
   Get-Service $ServiceName -DependentServices
  }
- #endregion
