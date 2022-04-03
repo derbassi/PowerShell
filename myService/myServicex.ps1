@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Add-Type -AssemblyName presentationframework
+=======
+﻿Add-Type -AssemblyName presentationframework
+>>>>>>> 0adebe2a6bad63d4d149d282c8b0848666366958
 [xml]$xaml=@'
 <?xml version="1.0" encoding ="utf-16"?>
 <Window 
@@ -34,4 +38,8 @@ $myForm.FindName("Close").add_click({
     $myForm.Close()
 })
 
+<<<<<<< HEAD
 $myForm.ShowDialog()
+=======
+$myForm.ShowDialog()
+>>>>>>> 0adebe2a6bad63d4d149d282c8b0848666366958

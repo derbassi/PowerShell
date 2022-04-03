@@ -84,10 +84,17 @@ Function Get-MyService{
  
    if($status -in ("Running","Stopped")){
    
+<<<<<<< HEAD
      if(-not $r){#return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
       Add-Type -AssemblyName PresentationFramework
       Add-Type -AssemblyName WindowsBase
       return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
+=======
+     if($r -eq $Null){return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
+      #Add-Type -AssemblyName PresentationFramework
+      #Add-Type -AssemblyName WindowsBase
+      #return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
+>>>>>>> 0adebe2a6bad63d4d149d282c8b0848666366958
      
      }  
      
