@@ -1,7 +1,4 @@
-# 04 APR 2022
-# 03:59
-
-[void][System.Reflection.Assembly]::LoadWithPartialName('System.Windows')
+﻿[void][System.Reflection.Assembly]::LoadWithPartialName('System.Windows')
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$xaml=@'
 <?xml version="1.0" encoding ="utf-16"?>

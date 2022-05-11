@@ -2,9 +2,10 @@
 .Synopsis
 Get-MyService is an extend mode for Get-Service
 
-.DESCRIPTION
+. DESCRIPTION
 The MyService will help you to get not only the state of the service but
 also the Process ID, the start mode and Required / dependencies services.
+
 
 .EXAMPLE
 Get-MyService -ServiceName net -status Running | Format-Table -Autosize
@@ -24,7 +25,6 @@ Name          DisplayName                       ProcesSId StartMode Started Stat
 ----          -----------                       --------- --------- ------- -----  
 XboxGipSvc    Xbox Accessory Management Service         0 Manual      False Stopped
 XboxNetApiSvc Xbox Live Networking Service              0 Manual      False Stopped
-
 .EXAMPLE
 Get-TheService -DisplayName "Network L" -status "AllStatus" | Format-Table -Autosize
 
@@ -84,17 +84,10 @@ Function Get-MyService{
  
    if($status -in ("Running","Stopped")){
    
-<<<<<<< HEAD
-     if(-not $r){#return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
-      Add-Type -AssemblyName PresentationFramework
-      Add-Type -AssemblyName WindowsBase
-      return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
-=======
      if($r -eq $Null){return Write-Host "Are You sure about the service?" -ForegroundColor Yellow -BackgroundColor Red
       #Add-Type -AssemblyName PresentationFramework
       #Add-Type -AssemblyName WindowsBase
       #return [windows.MessageBox]::Show("Wrong Service's or Display Name. Please repeat...","Get-myService","OK","Error")
->>>>>>> 0adebe2a6bad63d4d149d282c8b0848666366958
      
      }  
      
@@ -147,6 +140,28 @@ Function Get-MyService{
  
  
  # Changing StartMode from one state to another state
+ Function Change-MyServiceStartMode{
+ [CmdletBinding()]
+      
+  param(
+  [Parameter(Mandatory, Position=0)]
+   [string]$ServiceName,
+ 
+  [Parameter(Mandatory, Position=1)]
+  [Validateset('Auto','Manual','Disabled')]
+  [string]$StartModeNew
+  )
+ 
+  $s = get-wmiobject -class win32_service | where-object {$_.name -eq "$ServiceName"} 
+  $r = $r.changestartmode("StartModeNew") 
+       if($r.returnvalue -eq 0) {Write-Host  "success" -ForegroundColor Green -BackgroundColor White
+       } 
+       else{"$($r.returnvalue) was reported" 
+       } 
+  }
+ 
+ # Get-MyService results exported to HTML Format
+
  Function Set-StartModeMyService{
  [CmdletBinding()]
       
@@ -169,14 +184,21 @@ Function Get-MyService{
  
  # Get-MyService results exported to HTML Format
  Function Export-StartModeToHTML{
+  [CmdletBinding()]
+      
+  param(
+  [Parameter(Mandatory)]
+  [Validateset('Running','Stopped','AllStatus')]
+  [string]$ServiceStatus
+  )
  $myFile ="c:\temp\myService.html"
  $myStyle ="<div align='center'>"
- $myStyle = $myStyle + "<style>BODY{background-color:#eaeaea;}"
+ $myStyle = $myStyle + "<style>BODY{background-color:#d2d6d0;}"
  $myStyle = $myStyle + "TABLE{align:center; border: 1px solid black; border-collapse: collapse;}"
- $myStyle = $myStyle + "TH{border: 1px solid black; background: #dddddd; padding: 5px;}"
+ $myStyle = $myStyle + "TH{border: 1px solid black; background: #6d6994; padding: 5px;}"
  $mystyle = $myStyle + "TD{border: 1px solid black; padding: 5px;}"
  $mystyle = $myStyle + "</style>"
- $Output = Get-MyService
+ $Output = Get-MyService -Status $ServiceStatus
  $Output | ConvertTo-Html -head $myStyle -body "<H2>Services Status List</H2>"| Out-File $myDestination$myFile
  Invoke-Expression $myDestination$myFile  
  }
